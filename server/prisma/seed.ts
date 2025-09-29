@@ -46,9 +46,11 @@ async function resetSequence(modelName: string) {
   if (maxIdResult.length === 0) return;
 
   const nextId = maxIdResult[0].id + 1;
-  await prisma.$executeRawUnsafe(`
+  await prisma.$executeRaw(
+    Prisma.raw(`
     SELECT setval(pg_get_serial_sequence('${quotedModelName}', 'id'), coalesce(max(id)+1, ${nextId}), false) FROM ${quotedModelName};
-  `);
+  `)
+  );
   console.log(`Reset sequence for ${modelName} to ${nextId}`);
 }
 
