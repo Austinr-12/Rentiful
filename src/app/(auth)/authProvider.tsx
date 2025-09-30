@@ -14,6 +14,7 @@ import "@aws-amplify/ui-react/styles.css";
 import { useRouter, usePathname } from "next/navigation";
 
 // https://docs.amplify.aws/gen1/javascript/tools/libraries/configure-categories/
+// Extra Info for amplify
 Amplify.configure({
   Auth: {
     Cognito: {
