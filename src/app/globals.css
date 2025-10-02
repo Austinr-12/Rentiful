@@ -55,10 +55,30 @@ body.dark,
   --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
 
   /* Primary color scale for custom classes */
-  --color-primary-200: hsl(221.2 83.2% 85%);
-  --color-primary-300: hsl(221.2 83.2% 70%);
-  --color-primary-500: hsl(221.2 83.2% 45%);
-  --color-primary-700: hsl(221.2 83.2% 35%);
+  --color-primary-50: hsl(0 0% 98.82%);
+  --color-primary-100: hsl(240 4.76% 94.51%);
+  --color-primary-200: hsl(210 16.67% 87.84%);
+  --color-primary-300: hsl(214.29 12.35% 78.43%);
+  --color-primary-400: hsl(210 9.76% 68.43%);
+  --color-primary-500: hsl(210 7.81% 54.31%);
+  --color-primary-600: hsl(220 9.68% 36.67%);
+  --color-primary-700: hsl(240 9.09% 16.47%);
+  --color-primary-800: hsl(220 8.33% 6.67%);
+  --color-primary-900: hsl(240 5.88% 1.57%);
+  --color-primary-950: hsl(0 0% 0%);
+
+  /* Secondary color scale */
+  --color-secondary-50: hsl(0 66.67% 99.41%);
+  --color-secondary-100: hsl(0 57.14% 97.65%);
+  --color-secondary-200: hsl(0 60% 93.53%);
+  --color-secondary-300: hsl(0 60.87% 87.25%);
+  --color-secondary-400: hsl(0 62.75% 80.39%);
+  --color-secondary-500: hsl(0 64.18% 71.96%);
+  --color-secondary-600: hsl(0 69.49% 62.35%);
+  --color-secondary-700: hsl(0 81.82% 51.37%);
+  --color-secondary-800: hsl(0 84.62% 28.24%);
+  --color-secondary-900: hsl(0 75% 14.51%);
+  --color-secondary-950: hsl(0 68.75% 10.2%);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -93,208 +113,103 @@ body.dark,
   }
 }
 
+/* Tailwind utility classes for primary colors */
+@layer utilities {
+  .bg-primary-50 { background-color: var(--color-primary-50); }
+  .bg-primary-100 { background-color: var(--color-primary-100); }
+  .bg-primary-200 { background-color: var(--color-primary-200); }
+  .bg-primary-300 { background-color: var(--color-primary-300); }
+  .bg-primary-400 { background-color: var(--color-primary-400); }
+  .bg-primary-500 { background-color: var(--color-primary-500); }
+  .bg-primary-600 { background-color: var(--color-primary-600); }
+  .bg-primary-700 { background-color: var(--color-primary-700); }
+  .bg-primary-800 { background-color: var(--color-primary-800); }
+  .bg-primary-900 { background-color: var(--color-primary-900); }
+  .bg-primary-950 { background-color: var(--color-primary-950); }
+
+  .text-primary-50 { color: var(--color-primary-50); }
+  .text-primary-100 { color: var(--color-primary-100); }
+  .text-primary-200 { color: var(--color-primary-200); }
+  .text-primary-300 { color: var(--color-primary-300); }
+  .text-primary-400 { color: var(--color-primary-400); }
+  .text-primary-500 { color: var(--color-primary-500); }
+  .text-primary-600 { color: var(--color-primary-600); }
+  .text-primary-700 { color: var(--color-primary-700); }
+  .text-primary-800 { color: var(--color-primary-800); }
+  .text-primary-900 { color: var(--color-primary-900); }
+  .text-primary-950 { color: var(--color-primary-950); }
+
+  /* Secondary color utilities */
+  .bg-secondary-50 { background-color: var(--color-secondary-50); }
+  .bg-secondary-100 { background-color: var(--color-secondary-100); }
+  .bg-secondary-200 { background-color: var(--color-secondary-200); }
+  .bg-secondary-300 { background-color: var(--color-secondary-300); }
+  .bg-secondary-400 { background-color: var(--color-secondary-400); }
+  .bg-secondary-500 { background-color: var(--color-secondary-500); }
+  .bg-secondary-600 { background-color: var(--color-secondary-600); }
+  .bg-secondary-700 { background-color: var(--color-secondary-700); }
+  .bg-secondary-800 { background-color: var(--color-secondary-800); }
+  .bg-secondary-900 { background-color: var(--color-secondary-900); }
+  .bg-secondary-950 { background-color: var(--color-secondary-950); }
+
+  .text-secondary-50 { color: var(--color-secondary-50); }
+  .text-secondary-100 { color: var(--color-secondary-100); }
+  .text-secondary-200 { color: var(--color-secondary-200); }
+  .text-secondary-300 { color: var(--color-secondary-300); }
+  .text-secondary-400 { color: var(--color-secondary-400); }
+  .text-secondary-500 { color: var(--color-secondary-500); }
+  .text-secondary-600 { color: var(--color-secondary-600); }
+  .text-secondary-700 { color: var(--color-secondary-700); }
+  .text-secondary-800 { color: var(--color-secondary-800); }
+  .text-secondary-900 { color: var(--color-secondary-900); }
+  .text-secondary-950 { color: var(--color-secondary-950); }
+}
+
+/* The rest of your existing styles (dashboard-container, mapboxgl, marker-popup, scrollbar, etc.) can follow below */
+
 .dashboard-container {
-  padding-top: 2rem;
-  padding-bottom: 1.25rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 30px;
+  gap: 30px;
+  background-color: var(--color-background);
 }
 
-/* Mapbox popup styling */
 .mapboxgl-popup-content {
-  background-color: var(--color-primary-700) !important;
-  border-radius: 0.5rem !important;
-  padding-top: 0.5rem !important;
-  padding-bottom: 0.5rem !important;
-  padding-left: 0.75rem !important;
-  padding-right: 0.75rem !important;
+  background-color: var(--color-card);
+  border-radius: var(--radius);
+  border: none;
 }
 
-.mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
-  border-bottom-color: var(--color-primary-700) !important;
-}
-
-.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
-  border-top-color: var(--color-primary-700) !important;
-}
-
-.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
-  border-right-color: var(--color-primary-700) !important;
-}
-
-.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
-  border-left-color: var(--color-primary-700) !important;
+.mapboxgl-popup-tip {
+  border-top-color: var(--color-card);
 }
 
 .marker-popup {
-  background-color: var(--color-primary-700);
-  color: white;
-  padding: 0;
-  margin: 0;
-  display: flex !important;
-  justify-content: space-between;
-  align-items: center;
-  gap: 0.75rem;
+  font-size: 14px;
+  color: var(--color-card-foreground);
 }
 
-.marker-popup-image {
-  width: 2.5rem;
-  height: 2.5rem;
-  object-fit: cover;
-  background-color: white;
-  border-radius: 0.5rem;
+.scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary-400) var(--color-primary-100);
 }
 
-.marker-popup-price {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 600;
-  color: var(--color-primary-200);
+.scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.marker-popup-title {
-  cursor: pointer;
+.scrollbar::-webkit-scrollbar-track {
+  background: var(--color-primary-100);
 }
 
-.marker-popup-title:hover {
-  text-decoration: underline;
-  color: rgb(147 197 253);
+.scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary-400);
+  border-radius: 20px;
+  border: 3px solid var(--color-primary-100);
 }
 
-.marker-popup-title:focus {
-  outline: none;
-}
-
-.marker-popup-price-unit {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  color: var(--color-primary-500);
-  font-weight: 400;
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 5px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--color-primary-200);
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--color-primary-300);
-}
-
-* {
-  border-color: var(--color-border);
-}
-
-body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}
-
-/* Amplify UI Overrides */
-[data-amplify-authenticator] {
-  --amplify-components-button-primary-background-color: var(--color-primary);
-  --amplify-components-button-primary-hover-background-color: color-mix(
-    in srgb,
-    var(--color-primary) 90%,
-    transparent
-  );
-  --amplify-components-button-border-radius: var(--radius);
-  --amplify-components-fieldcontrol-border-radius: var(--radius);
-}
-
-[data-amplify-authenticator][data-variation="default"] {
-  height: 100%;
-  padding: 2rem !important;
-}
-
-[data-amplify-authenticator] [data-amplify-router] {
-  border: none !important;
-  box-shadow: none !important;
-  max-width: 400px !important;
-  margin: 0 auto;
-}
-
-[data-amplify-authenticator] [data-amplify-container] {
-  border-radius: var(--radius);
-  padding: 2rem !important;
-  border: 1px solid var(--color-border);
-}
-
-[data-amplify-authenticator] [data-amplify-form] {
-  padding: 0 !important;
-}
-
-[data-amplify-authenticator] .amplify-tabs__list {
-  display: none;
-}
-
-[data-amplify-authenticator] .amplify-button--primary {
-  width: 100%;
-  height: 2.75rem;
-  margin-top: 1rem;
-  background-color: var(--color-primary) !important;
-  color: var(--color-primary-foreground) !important;
-  font-weight: 500;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-[data-amplify-authenticator] .amplify-button--primary:hover {
-  background-color: color-mix(
-    in srgb,
-    var(--color-primary) 80%,
-    transparent
-  ) !important;
-}
-
-[data-amplify-authenticator] .amplify-field-group__control {
-  border-color: var(--color-input);
-}
-
-[data-amplify-authenticator] .amplify-field-group__control:focus-within {
-  border-color: var(--color-ring) !important;
-  box-shadow: 0 0 0 1px var(--color-ring) !important;
-}
-
-[data-amplify-authenticator] .amplify-field__show-password {
-  color: var(--color-muted-foreground);
-}
-
-[data-amplify-authenticator] .amplify-label {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 500;
-  color: var(--color-foreground);
-}
-
-[data-amplify-authenticator] .amplify-select {
-  border-color: var(--color-input);
-  border-radius: var(--radius);
-  height: 2.5rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-}
-
-[data-amplify-authenticator] .amplify-text--error {
-  color: #ff0000;
-}
-
-/* Sonner Toast Styles */
-[data-close-button="true"] {
-  background-color: var(--color-background);
-  border-color: var(--color-border);
-  color: var(--color-foreground);
-}
-
-[data-close-button="true"]:hover {
-  background-color: var(--color-muted);
-}
+/* Additional custom styles if any... */
