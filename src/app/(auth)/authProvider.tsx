@@ -62,7 +62,6 @@ const components = {
   SignUp: {
     FormFields() {
       const { validationErrors } = useAuthenticator();
-
       return (
         <>
           <Authenticator.SignUp.FormFields />
