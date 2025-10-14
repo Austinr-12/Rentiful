@@ -1,3 +1,4 @@
+import { createNewUserInDatabase } from "@/lib/utils";
 import { Manager, Tenant } from "@/types/prismaTypes";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
@@ -33,7 +34,13 @@ export const api = createApi({
           let userDetailsResponse = await fetchWithBQ(endpoint);
 
           // if user doesn't exist, create new user\
-
+          if (userDetailsResponse.error && userDetailsResponse.error.status === 404 ) {
+            userDetailsResponse = await createNewUserInDatabase (
+              user, 
+              userRole,
+              fetchWithBQ
+            )
+          }
 
           return {
             data: {
@@ -52,4 +59,7 @@ export const api = createApi({
   }),
 });
 
-export const {} = api;
+
+export const {
+  useGetAuthUserQuery,
+} = api;
