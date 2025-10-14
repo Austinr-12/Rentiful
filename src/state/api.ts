@@ -37,6 +37,7 @@ export const api = createApi({
           if (userDetailsResponse.error && userDetailsResponse.error.status === 404 ) {
             userDetailsResponse = await createNewUserInDatabase (
               user, 
+              idToken,
               userRole,
               fetchWithBQ
             )
