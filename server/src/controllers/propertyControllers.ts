@@ -114,7 +114,33 @@ export const getProperties = async (
         );
     }
 
+     const completeQuery = Prisma.sql`
+      SELECT 
+        p.*,
+        json_build_object(
+          'id', l.id,
+          'address', l.address,
+          'city', l.city,
+          'state', l.state,
+          'country', l.country,
+          'postalCode', l."postalCode",
+          'coordinates', json_build_object(
+            'longitude', ST_X(l."coordinates"::geometry),
+            'latitude', ST_Y(l."coordinates"::geometry)
+          )
+        ) as location
+      FROM "Property" p
+      JOIN "Location" l ON p."locationId" = l.id
+      ${
+        whereConditions.length > 0
+          ? Prisma.sql`WHERE ${Prisma.join(whereConditions, " AND ")}`
+          : Prisma.empty
+      }
+    `;
 
+    const properties = await prisma.$queryRaw(completeQuery);
+
+    res.json(properties);
   } catch (error: any) {
     res
       .status(500)
@@ -122,4 +148,42 @@ export const getProperties = async (
   }
 };
 
+export const getProperty = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+    try {
+        const { id } = req.params
+        const property = await prisma.property.findUnique({
+            where: { id: Number(id) },
+            include: {
+                location: true,
+            },
+        });
 
+         if (property) {
+      const coordinates: { coordinates: string }[] =
+        await prisma.$queryRaw`SELECT ST_asText(coordinates) as coordinates from "Location" where id = ${property.location.id}`;
+
+      const geoJSON: any = wktToGeoJSON(coordinates[0]?.coordinates || "");
+      const longitude = geoJSON.coordinates[0];
+      const latitude = geoJSON.coordinates[1];
+
+      const propertyWithCoordinates = {
+        ...property,
+        location: {
+          ...property.location,
+          coordinates: {
+            longitude,
+            latitude,
+          },
+        },
+      };
+      res.json(propertyWithCoordinates);
+    }
+  } catch (err: any) {
+    res
+      .status(500)
+      .json({ message: `Error retrieving property: ${err.message}` });
+  }
+};
