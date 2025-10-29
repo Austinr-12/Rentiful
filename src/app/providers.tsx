@@ -12,6 +12,6 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       </Authenticator.Provider>
     </StoreProvider>
   );
-}
+};
 
 export default Providers;

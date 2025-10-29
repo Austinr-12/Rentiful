@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
 import Navbar from "@/components/Navbar";
-import { SidebarProvider } from '@/components/ui/sidebar';
+import { SidebarProvider } from "@/components/ui/sidebar";
 import Sidebar from "@/components/AppSidebar";
-import { NAVBAR_HEIGHT } from '@/lib/constants';
-import { useGetAuthUserQuery } from '@/state/api';
-import { usePathname, useRouter } from 'next/navigation';
+import { NAVBAR_HEIGHT } from "@/lib/constants";
+import React, { useEffect, useState } from "react";
+import { useGetAuthUserQuery } from "@/state/api";
+import { usePathname, useRouter } from "next/navigation";
 
-const DashboardLayout = ({ children } : {children: React.ReactNode}) => {
-  const{ data: authUser, isLoading: authLoading } = useGetAuthUserQuery();
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  const { data: authUser, isLoading: authLoading } = useGetAuthUserQuery();
   const router = useRouter();
   const pathname = usePathname();
   const [isLoading, setIsLoading] = useState(true);
@@ -18,39 +18,39 @@ const DashboardLayout = ({ children } : {children: React.ReactNode}) => {
     if (authUser) {
       const userRole = authUser.userRole?.toLowerCase();
       if (
-        (userRole === "manager" && pathname.startsWith("/tenants")) || 
+        (userRole === "manager" && pathname.startsWith("/tenants")) ||
         (userRole === "tenant" && pathname.startsWith("/managers"))
-      ){
+      ) {
         router.push(
           userRole === "manager"
-          ? "/managers/properties"
-          : "/tenants/favorites",
+            ? "/managers/properties"
+            : "/tenants/favorites",
           { scroll: false }
         );
       } else {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
   }, [authUser, router, pathname]);
 
-  if(authLoading || isLoading) return <>Loading...</>
-  if(!authUser?.userRole) return null;
+  if (authLoading || isLoading) return <>Loading...</>;
+  if (!authUser?.userRole) return null;
 
-    return (
-    <SidebarProvider> 
-    <div className = "min-h-screen w-full bg-primary-100">
-      <Navbar />
-      <div style = {{ paddingTop: '${NAVBAR_HEIGHT}px'}}>
-        <main className = "flex">
-            <Sidebar userType= {authUser.userRole.toLowerCase()}/>
-            <div className = "flex-grow transition-all duration-300">
-                {children}
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen w-full bg-primary-100">
+        <Navbar />
+        <div style={{ marginTop: `${NAVBAR_HEIGHT}px` }}>
+          <main className="flex">
+            <Sidebar userType={authUser.userRole.toLowerCase()} />
+            <div className="flex-grow transition-all duration-300">
+              {children}
             </div>
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
     </SidebarProvider>
-  )
-}
+  );
+};
 
-export default DashboardLayout
+export default DashboardLayout;
