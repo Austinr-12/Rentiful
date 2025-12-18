@@ -8,6 +8,7 @@ import FiltersBar from "./FiltersBar";
 import { cleanParams } from "@/lib/utils";
 import { setFilters } from "@/state";
 import FiltersFull from "./FiltersFull";
+import Map from "./Map";
 
 
 const SearchPage = () => {
