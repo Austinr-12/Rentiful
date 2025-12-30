@@ -16,26 +16,26 @@ import applicationRoutes from "./routes/applicationRoutes";
 dotenv.config();
 const app = express();
 app.use(express.json());
+app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false}))
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
 /* ROUTES */
-app.get('/', authMiddleware (["manager"]),(req, res) => {
-    res.send("This is home route");
+app.get("/", (req, res) => {
+  res.send("This is home route");
 });
 
-
-app.use('/applications', applicationRoutes);
+app.use("/applications", applicationRoutes);
 app.use("/properties", propertyRoutes);
-app.use('/leases', leaseRoutes);
+app.use("/leases", leaseRoutes);
 app.use("/tenants", authMiddleware(["tenant"]), tenantRoutes);
 app.use("/managers", authMiddleware(["manager"]), managerRoutes);
 
 /* SERVER */
-const port = process.env.PORT || 3002;
-app.listen(port,  () => {
-    console.log(`Server is running on port ${port}`);
-})
+const port = Number(process.env.PORT) || 3002;
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server running on port ${port}`);
+});

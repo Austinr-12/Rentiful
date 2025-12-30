@@ -1,9 +1,9 @@
 import express from "express";
-import{
-    getManager,
-    createManager,
-    updateManager,
-    getManagerProperties
+import {
+  getManager,
+  createManager,
+  updateManager,
+  getManagerProperties,
 } from "../controllers/managerControllers";
 
 const router = express.Router();

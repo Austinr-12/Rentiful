@@ -54,7 +54,7 @@ body.dark,
   --color-sidebar-border: hsl(220 13% 91%);
   --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
 
-  /* Primary color scale for custom classes */
+  /* Primary color scale */
   --color-primary-50: hsl(0 0% 98.82%);
   --color-primary-100: hsl(240 4.76% 94.51%);
   --color-primary-200: hsl(210 16.67% 87.84%);
@@ -81,39 +81,37 @@ body.dark,
   --color-secondary-950: hsl(0 68.75% 10.2%);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: hsl(222.2 84% 3.9%);
-    --color-foreground: hsl(210 40% 98%);
-    --color-card: hsl(222.2 84% 4.9%);
-    --color-card-foreground: hsl(210 40% 98%);
-    --color-popover: hsl(222.2 84% 4.9%);
-    --color-popover-foreground: hsl(210 40% 98%);
-    --color-primary: hsl(217.2 91.2% 59.8%);
-    --color-primary-foreground: hsl(222.2 47.4% 11.2%);
-    --color-secondary: hsl(217.2 32.6% 17.5%);
-    --color-secondary-foreground: hsl(210 40% 98%);
-    --color-muted: hsl(217.2 32.6% 17.5%);
-    --color-muted-foreground: hsl(215 20.2% 65.1%);
-    --color-accent: hsl(217.2 32.6% 17.5%);
-    --color-accent-foreground: hsl(210 40% 98%);
-    --color-destructive: hsl(0 62.8% 30.6%);
-    --color-destructive-foreground: hsl(210 40% 98%);
-    --color-border: hsl(217.2 32.6% 17.5%);
-    --color-input: hsl(217.2 32.6% 15.5%);
-    --color-ring: hsl(224.3 76.3% 48%);
-    --color-sidebar-background: hsl(240 5.9% 10%);
-    --color-sidebar-foreground: hsl(240 4.8% 95.9%);
-    --color-sidebar-primary: hsl(224.3 76.3% 48%);
-    --color-sidebar-primary-foreground: hsl(0 0% 100%);
-    --color-sidebar-accent: hsl(240 3.7% 15.9%);
-    --color-sidebar-accent-foreground: hsl(240 4.8% 95.9%);
-    --color-sidebar-border: hsl(240 3.7% 15.9%);
-    --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
-  }
+/* Dark mode with class selector */
+.dark {
+  --color-background: hsl(222.2 84% 3.9%);
+  --color-foreground: hsl(210 40% 98%);
+  --color-card: hsl(222.2 84% 4.9%);
+  --color-card-foreground: hsl(210 40% 98%);
+  --color-popover: hsl(222.2 84% 4.9%);
+  --color-popover-foreground: hsl(210 40% 98%);
+  --color-primary: hsl(217.2 91.2% 59.8%);
+  --color-primary-foreground: hsl(222.2 47.4% 11.2%);
+  --color-secondary: hsl(217.2 32.6% 17.5%);
+  --color-secondary-foreground: hsl(210 40% 98%);
+  --color-muted: hsl(217.2 32.6% 17.5%);
+  --color-muted-foreground: hsl(215 20.2% 65.1%);
+  --color-accent: hsl(217.2 32.6% 17.5%);
+  --color-accent-foreground: hsl(210 40% 98%);
+  --color-destructive: hsl(0 62.8% 30.6%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+  --color-border: hsl(217.2 32.6% 17.5%);
+  --color-input: hsl(217.2 32.6% 15.5%);
+  --color-ring: hsl(224.3 76.3% 48%);
+  --color-sidebar-background: hsl(240 5.9% 10%);
+  --color-sidebar-foreground: hsl(240 4.8% 95.9%);
+  --color-sidebar-primary: hsl(224.3 76.3% 48%);
+  --color-sidebar-primary-foreground: hsl(0 0% 100%);
+  --color-sidebar-accent: hsl(240 3.7% 15.9%);
+  --color-sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --color-sidebar-border: hsl(240 3.7% 15.9%);
+  --color-sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
-/* Tailwind utility classes for primary colors */
 @layer utilities {
   .bg-primary-50 { background-color: var(--color-primary-50); }
   .bg-primary-100 { background-color: var(--color-primary-100); }
@@ -139,7 +137,6 @@ body.dark,
   .text-primary-900 { color: var(--color-primary-900); }
   .text-primary-950 { color: var(--color-primary-950); }
 
-  /* Secondary color utilities */
   .bg-secondary-50 { background-color: var(--color-secondary-50); }
   .bg-secondary-100 { background-color: var(--color-secondary-100); }
   .bg-secondary-200 { background-color: var(--color-secondary-200); }
@@ -165,51 +162,186 @@ body.dark,
   .text-secondary-950 { color: var(--color-secondary-950); }
 }
 
-/* The rest of your existing styles (dashboard-container, mapboxgl, marker-popup, scrollbar, etc.) can follow below */
-
 .dashboard-container {
-  width: 100%;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  padding: 0 30px;
-  gap: 30px;
-  background-color: var(--color-background);
+  padding-top: 2rem;
+  padding-bottom: 1.25rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
+/* Mapbox styles */
 .mapboxgl-popup-content {
-  background-color: var(--color-card);
-  border-radius: var(--radius);
-  border: none;
+  background-color: var(--color-primary-700) !important;
+  border-radius: var(--radius) !important;
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+  padding-left: 0.75rem !important;
+  padding-right: 0.75rem !important;
 }
 
-.mapboxgl-popup-tip {
-  border-top-color: var(--color-card);
+.mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+  border-bottom-color: var(--color-primary-700) !important;
+}
+
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: var(--color-primary-700) !important;
+}
+
+.mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+  border-right-color: var(--color-primary-700) !important;
+}
+
+.mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+  border-left-color: var(--color-primary-700) !important;
 }
 
 .marker-popup {
-  font-size: 14px;
-  color: var(--color-card-foreground);
+  background-color: var(--color-primary-700);
+  color: white;
+  padding: 0;
+  margin: 0;
+  display: flex !important;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
 }
 
-.scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-primary-400) var(--color-primary-100);
+.marker-popup-image {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: cover;
+  background-color: white;
+  border-radius: var(--radius);
 }
 
-.scrollbar::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+.marker-popup-price {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-primary-200);
 }
 
-.scrollbar::-webkit-scrollbar-track {
-  background: var(--color-primary-100);
+.marker-popup-title {
+  cursor: pointer;
 }
 
-.scrollbar::-webkit-scrollbar-thumb {
-  background-color: var(--color-primary-400);
-  border-radius: 20px;
-  border: 3px solid var(--color-primary-100);
+.marker-popup-title:hover {
+  text-decoration: underline;
+  color: rgb(147 197 253);
 }
 
-/* Additional custom styles if any... */
+.marker-popup-title:focus {
+  outline: none;
+}
+
+.marker-popup-price-unit {
+  font-size: 0.75rem;
+  color: var(--color-primary-500);
+  font-weight: normal;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-primary-200);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-primary-300);
+}
+
+/* Amplify UI Overrides */
+[data-amplify-authenticator] {
+  --amplify-components-button-primary-background-color: var(--color-primary);
+  --amplify-components-button-primary-hover-background-color: hsl(var(--color-primary) / 0.9);
+  --amplify-components-button-border-radius: var(--radius);
+  --amplify-components-fieldcontrol-border-radius: var(--radius);
+}
+
+[data-amplify-authenticator][data-variation="default"] {
+  height: 100%;
+  padding: 2rem !important;
+}
+
+[data-amplify-authenticator] [data-amplify-router] {
+  border: none !important;
+  box-shadow: none !important;
+  max-width: 400px !important;
+  margin: 0 auto;
+}
+
+[data-amplify-authenticator] [data-amplify-container] {
+  border-radius: var(--radius);
+  padding: 2rem !important;
+  border: 1px solid var(--color-border);
+}
+
+[data-amplify-authenticator] [data-amplify-form] {
+  padding: 0 !important;
+}
+
+[data-amplify-authenticator] .amplify-tabs__list {
+  display: none;
+}
+
+[data-amplify-authenticator] .amplify-button--primary {
+  width: 100%;
+  height: 2.75rem;
+  margin-top: 1rem;
+  background-color: var(--color-primary) !important;
+  color: var(--color-primary-foreground) !important;
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+[data-amplify-authenticator] .amplify-button--primary:hover {
+  background-color: hsl(var(--color-primary) / 0.8) !important;
+}
+
+[data-amplify-authenticator] .amplify-field-group__control {
+  border-color: var(--color-input);
+}
+
+[data-amplify-authenticator] .amplify-field-group__control:focus-within {
+  border-color: var(--color-ring) !important;
+  box-shadow: 0 0 0 1px var(--color-ring) !important;
+}
+
+[data-amplify-authenticator] .amplify-field__show-password {
+  color: var(--color-muted-foreground);
+}
+
+[data-amplify-authenticator] .amplify-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-foreground);
+}
+
+[data-amplify-authenticator] .amplify-select {
+  border-color: var(--color-input);
+  border-radius: var(--radius);
+  height: 2.5rem;
+  font-size: 0.875rem;
+}
+
+[data-amplify-authenticator] .amplify-text--error {
+  color: #ff0000;
+}
+
+/* Sonner Toast Styles */
+[data-close-button="true"] {
+  background-color: var(--color-background);
+  border-color: var(--color-border);
+  color: var(--color-foreground);
+}
+
+[data-close-button="true"]:hover {
+  background-color: var(--color-muted);
+}
