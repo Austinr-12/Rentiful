@@ -9,12 +9,12 @@ const CallToActionSection = () => {
   return (
     <div className="relative py-24">
       <Image
-        src="/landing-call-to-action.jpg"
+        src="/landing-call-to-action.png"
         alt="Rentiful Search Section Background"
         fill
         className="object-cover object-center"
       />
-      <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+      <div className="absolute inset-0 bg-black/60 z-0"></div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         transition={{ duration: 0.5 }}
