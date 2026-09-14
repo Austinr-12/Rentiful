@@ -1,4 +1,5 @@
 import express from "express";
+import { requireSelf } from "../middleware/authMiddleware";
 import {
   getTenant,
   createTenant,
@@ -8,13 +9,15 @@ import {
   removeFavoriteProperty,
 } from "../controllers/tenantControllers";
 
+// Mounted behind authMiddleware(["tenant"]) in index.ts.
+// Every :cognitoId route additionally requires the id to be the caller's own.
 const router = express.Router();
 
-router.get("/:cognitoId", getTenant);
-router.put("/:cognitoId", updateTenant);
 router.post("/", createTenant);
-router.get("/:cognitoId/current-residences", getCurrentResidences);
-router.post("/:cognitoId/favorites/:propertyId", addFavoriteProperty);
-router.delete("/:cognitoId/favorites/:propertyId", removeFavoriteProperty);
+router.get("/:cognitoId", requireSelf(), getTenant);
+router.put("/:cognitoId", requireSelf(), updateTenant);
+router.get("/:cognitoId/current-residences", requireSelf(), getCurrentResidences);
+router.post("/:cognitoId/favorites/:propertyId", requireSelf(), addFavoriteProperty);
+router.delete("/:cognitoId/favorites/:propertyId", requireSelf(), removeFavoriteProperty);
 
 export default router;

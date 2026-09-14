@@ -1,37 +1,51 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import { prisma } from "../lib/prisma";
+import { forbidden, notFound } from "../lib/errors";
+import { idParam } from "../lib/schemas";
+import { AuthenticatedUser, currentUser } from "../middleware/authMiddleware";
 
-const prisma = new PrismaClient();
+/** Tenants see their own leases; managers see leases on their properties. */
+const leaseScope = (user: AuthenticatedUser): Prisma.LeaseWhereInput =>
+  user.role === "tenant"
+    ? { tenantCognitoId: user.id }
+    : { property: { managerCognitoId: user.id } };
 
-export const getLeases = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const leases = await prisma.lease.findMany({
-      include: {
-        tenant: true,
-        property: true,
-      },
-    });
-    res.json(leases);
-  } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error retrieving leases: ${error.message}` });
-  }
+export const getLeases = async (req: Request, res: Response) => {
+  const user = currentUser(req);
+
+  const leases = await prisma.lease.findMany({
+    where: leaseScope(user),
+    include: { tenant: true, property: true },
+    orderBy: { startDate: "desc" },
+  });
+
+  res.json(leases);
 };
 
-export const getLeasePayments = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { id } = req.params;
-    const payments = await prisma.payment.findMany({
-      where: { leaseId: Number(id) },
-    });
-    res.json(payments);
-  } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error retrieving lease payments: ${error.message}` });
-  }
+export const getLeasePayments = async (req: Request, res: Response) => {
+  const user = currentUser(req);
+  const { id } = idParam.parse(req.params);
+
+  const lease = await prisma.lease.findUnique({
+    where: { id },
+    select: {
+      tenantCognitoId: true,
+      property: { select: { managerCognitoId: true } },
+    },
+  });
+  if (!lease) throw notFound("Lease");
+
+  const allowed =
+    user.role === "tenant"
+      ? lease.tenantCognitoId === user.id
+      : lease.property.managerCognitoId === user.id;
+  if (!allowed) throw forbidden();
+
+  const payments = await prisma.payment.findMany({
+    where: { leaseId: id },
+    orderBy: { dueDate: "asc" },
+  });
+
+  res.json(payments);
 };

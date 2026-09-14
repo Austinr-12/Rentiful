@@ -1,6 +1,12 @@
 import { LucideIcon } from "lucide-react";
 import { AuthUser } from "aws-amplify/auth";
-import { Manager, Tenant, Property, Application } from "./prismaTypes";
+import { Manager, Tenant } from "./prismaTypes";
+import {
+  ApplicationWithRelations,
+  PropertyWithLocation,
+  UserRole,
+} from "@/state/api";
+import { SettingsFormData } from "@/lib/schemas";
 import { MotionProps as OriginalMotionProps } from "framer-motion";
 
 declare module "framer-motion" {
@@ -90,13 +96,13 @@ declare global {
   }
 
   interface ApplicationCardProps {
-    application: Application;
+    application: ApplicationWithRelations;
     userType: "manager" | "renter";
     children: React.ReactNode;
   }
 
   interface CardProps {
-    property: Property;
+    property: PropertyWithLocation;
     isFavorite: boolean;
     onFavoriteToggle: () => void;
     showFavoriteButton?: boolean;
@@ -104,7 +110,7 @@ declare global {
   }
 
   interface CardCompactProps {
-    property: Property;
+    property: PropertyWithLocation;
     isFavorite: boolean;
     onFavoriteToggle: () => void;
     showFavoriteButton?: boolean;
@@ -133,7 +139,7 @@ declare global {
   interface User {
     cognitoInfo: AuthUser;
     userInfo: Tenant | Manager;
-    userRole: JsonObject | JsonPrimitive | JsonArray;
+    userRole: UserRole;
   }
 }
 

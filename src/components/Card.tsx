@@ -73,7 +73,7 @@ const Card = ({
           <div className="flex items-center mb-2">
             <Star className="w-4 h-4 text-yellow-400 mr-1" />
             <span className="font-semibold">
-              {property.averageRating.toFixed(1)}
+              {(property.averageRating ?? 0).toFixed(1)}
             </span>
             <span className="text-gray-600 ml-1">
               ({property.numberOfReviews} Reviews)

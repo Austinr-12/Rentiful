@@ -16,7 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 import { SidebarTrigger } from "./ui/sidebar";
 
 const Navbar = () => {
@@ -113,7 +113,6 @@ const Navbar = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger className="flex items-center gap-2 focus:outline-none">
                   <Avatar>
-                    <AvatarImage src={authUser.userInfo?.image} />
                     <AvatarFallback className="bg-primary-600">
                       {authUser.userRole?.[0].toUpperCase()}
                     </AvatarFallback>

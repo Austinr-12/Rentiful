@@ -2,14 +2,46 @@ import { cleanParams, createNewUserInDatabase, withToast } from "@/lib/utils";
 import {
   Application,
   Lease,
+  Location,
   Manager,
   Payment,
   Property,
   Tenant,
 } from "@/types/prismaTypes";
+import { ApplicationFormData } from "@/lib/schemas";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
 import { FiltersState } from ".";
+
+/* ---------- API response shapes (what the server actually returns) ---------- */
+
+export type UserRole = "tenant" | "manager";
+
+export type ApplicationStatus = "Pending" | "Approved" | "Denied";
+
+export type LeaseWithNextPayment = Lease & { nextPaymentDate: string };
+
+/** GET /applications, POST /applications, PUT /applications/:id/status */
+export type ApplicationWithRelations = Application & {
+  property: Property & { location: Location; address: string };
+  tenant: Tenant;
+  manager: Manager;
+  lease: LeaseWithNextPayment | null;
+};
+
+/** Coordinates are attached server-side; PostGIS stores them, Prisma cannot select them. */
+export type PropertyWithLocation = Property & {
+  location: Location & { coordinates: { longitude: number; latitude: number } };
+};
+
+/** GET /tenants/:id — favorites come back as ids only. */
+export type TenantWithFavorites = Tenant & { favorites: { id: number }[] };
+
+/** GET /leases (scoped to the caller by the server) */
+export type LeaseWithRelations = Lease & { tenant: Tenant; property: Property };
+
+/** GET /properties/:id/leases (manager, own properties only) */
+export type PropertyLease = Lease & { tenant: Tenant; payments: Payment[] };
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -40,7 +72,10 @@ export const api = createApi({
           const session = await fetchAuthSession();
           const { idToken } = session.tokens ?? {};
           const user = await getCurrentUser();
-          const userRole = idToken?.payload["custom:role"] as string;
+          // Normalised to lower case once here so every consumer can compare directly.
+          const userRole = String(
+            idToken?.payload["custom:role"] ?? ""
+          ).toLowerCase() as UserRole;
 
           const endpoint =
             userRole === "manager"
@@ -77,7 +112,7 @@ export const api = createApi({
 
     // property related endpoints
     getProperties: build.query<
-      Property[],
+      PropertyWithLocation[],
       Partial<FiltersState> & { favoriteIds?: number[] }
     >({
       query: (filters) => {
@@ -113,7 +148,7 @@ export const api = createApi({
       },
     }),
 
-    getProperty: build.query<Property, number>({
+    getProperty: build.query<PropertyWithLocation, number>({
       query: (id) => `properties/${id}`,
       providesTags: (result, error, id) => [{ type: "PropertyDetails", id }],
       async onQueryStarted(_, { queryFulfilled }) {
@@ -124,7 +159,7 @@ export const api = createApi({
     }),
 
     // tenant related endpoints
-    getTenant: build.query<Tenant, string>({
+    getTenant: build.query<TenantWithFavorites, string>({
       query: (cognitoId) => `tenants/${cognitoId}`,
       providesTags: (result) => [{ type: "Tenants", id: result?.id }],
       async onQueryStarted(_, { queryFulfilled }) {
@@ -134,7 +169,7 @@ export const api = createApi({
       },
     }),
 
-    getCurrentResidences: build.query<Property[], string>({
+    getCurrentResidences: build.query<PropertyWithLocation[], string>({
       query: (cognitoId) => `tenants/${cognitoId}/current-residences`,
       providesTags: (result) =>
         result
@@ -209,7 +244,7 @@ export const api = createApi({
     }),
 
     // manager related endpoints
-    getManagerProperties: build.query<Property[], string>({
+    getManagerProperties: build.query<PropertyWithLocation[], string>({
       query: (cognitoId) => `managers/${cognitoId}/properties`,
       providesTags: (result) =>
         result
@@ -243,7 +278,10 @@ export const api = createApi({
       },
     }),
 
-    createProperty: build.mutation<Property, FormData>({
+    createProperty: build.mutation<
+      PropertyWithLocation & { manager: Manager },
+      FormData
+    >({
       query: (newProperty) => ({
         url: `properties`,
         method: "POST",
@@ -262,7 +300,7 @@ export const api = createApi({
     }),
 
     // lease related enpoints
-    getLeases: build.query<Lease[], number>({
+    getLeases: build.query<LeaseWithRelations[], void>({
       query: () => "leases",
       providesTags: ["Leases"],
       async onQueryStarted(_, { queryFulfilled }) {
@@ -272,7 +310,7 @@ export const api = createApi({
       },
     }),
 
-    getPropertyLeases: build.query<Lease[], number>({
+    getPropertyLeases: build.query<PropertyLease[], number>({
       query: (propertyId) => `properties/${propertyId}/leases`,
       providesTags: ["Leases"],
       async onQueryStarted(_, { queryFulfilled }) {
@@ -293,21 +331,9 @@ export const api = createApi({
     }),
 
     // application related endpoints
-    getApplications: build.query<
-      Application[],
-      { userId?: string; userType?: string }
-    >({
-      query: (params) => {
-        const queryParams = new URLSearchParams();
-        if (params.userId) {
-          queryParams.append("userId", params.userId.toString());
-        }
-        if (params.userType) {
-          queryParams.append("userType", params.userType);
-        }
-
-        return `applications?${queryParams.toString()}`;
-      },
+    // The server scopes results to the authenticated user from the token.
+    getApplications: build.query<ApplicationWithRelations[], void>({
+      query: () => "applications",
       providesTags: ["Applications"],
       async onQueryStarted(_, { queryFulfilled }) {
         await withToast(queryFulfilled, {
@@ -317,8 +343,8 @@ export const api = createApi({
     }),
 
     updateApplicationStatus: build.mutation<
-      Application & { lease?: Lease },
-      { id: number; status: string }
+      ApplicationWithRelations,
+      { id: number; status: ApplicationStatus }
     >({
       query: ({ id, status }) => ({
         url: `applications/${id}/status`,
@@ -334,7 +360,11 @@ export const api = createApi({
       },
     }),
 
-    createApplication: build.mutation<Application, Partial<Application>>({
+    // Status, date and tenant id are assigned server-side.
+    createApplication: build.mutation<
+      ApplicationWithRelations,
+      ApplicationFormData & { propertyId: number }
+    >({
       query: (body) => ({
         url: `applications`,
         method: "POST",

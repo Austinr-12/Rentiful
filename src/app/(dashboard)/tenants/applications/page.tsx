@@ -3,20 +3,16 @@
 import ApplicationCard from "@/components/ApplicationCard";
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
-import { useGetApplicationsQuery, useGetAuthUserQuery } from "@/state/api";
+import { useGetApplicationsQuery } from "@/state/api";
 import { CircleCheckBig, Clock, Download, XCircle } from "lucide-react";
 import React from "react";
 
 const Applications = () => {
-  const { data: authUser } = useGetAuthUserQuery();
   const {
     data: applications,
     isLoading,
     isError,
-  } = useGetApplicationsQuery({
-    userId: authUser?.cognitoInfo?.userId,
-    userType: "tenant",
-  });
+  } = useGetApplicationsQuery();
 
   if (isLoading) return <Loading />;
   if (isError || !applications) return <div>Error fetching applications</div>;
@@ -39,7 +35,9 @@ const Applications = () => {
                 <div className="bg-green-100 p-4 text-green-700 grow flex items-center">
                   <CircleCheckBig className="w-5 h-5 mr-2" />
                   The property is being rented by you until{" "}
-                  {new Date(application.lease?.endDate).toLocaleDateString()}
+                  {application.lease
+                    ? new Date(application.lease.endDate).toLocaleDateString()
+                    : "the lease end date"}
                 </div>
               ) : application.status === "Pending" ? (
                 <div className="bg-yellow-100 p-4 text-yellow-700 grow flex items-center">

@@ -20,13 +20,10 @@ export function formatPriceValue(value: number | null, isMin: boolean) {
   return isMin ? `$${value}+` : `<$${value}`;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function cleanParams(params: Record<string, any>): Record<string, any> {
   return Object.fromEntries(
     Object.entries(params).filter(
-      (
-        [_, value] // eslint-disable-line @typescript-eslint/no-unused-vars
-      ) =>
+      ([, value]) =>
         value !== undefined &&
         value !== "any" &&
         value !== "" &&
@@ -69,7 +66,6 @@ export const createNewUserInDatabase = async (
     url: createEndpoint,
     method: "POST",
     body: {
-      cognitoId: user.userId,
       name: user.username,
       email: idToken?.payload?.email || "",
       phoneNumber: "",

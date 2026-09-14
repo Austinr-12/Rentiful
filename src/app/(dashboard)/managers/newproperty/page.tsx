@@ -58,8 +58,6 @@ const NewProperty = () => {
       }
     });
 
-    formData.append("managerCognitoId", authUser.cognitoInfo.userId);
-
     await createProperty(formData);
   };
 

@@ -8,8 +8,9 @@ import {
 
 const router = express.Router();
 
+// Results are scoped to the caller inside the controller.
+router.get("/", authMiddleware(["manager", "tenant"]), listApplications);
 router.post("/", authMiddleware(["tenant"]), createApplication);
 router.put("/:id/status", authMiddleware(["manager"]), updateApplicationStatus);
-router.get("/", authMiddleware(["manager", "tenant"]), listApplications);
 
 export default router;

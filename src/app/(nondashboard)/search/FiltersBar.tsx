@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PropertyTypeIcons } from "@/lib/constants";
+import { geocodeLocation } from "@/lib/geocode";
 
 const FiltersBar = () => {
   const dispatch = useDispatch();
@@ -74,23 +75,12 @@ const FiltersBar = () => {
 
   const handleLocationSearch = async () => {
     try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          searchInput
-        )}.json?access_token=${
-          process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
-        }&fuzzyMatch=true`
-      );
-      const data = await response.json();
-      if (data.features && data.features.length > 0) {
-        const [lng, lat] = data.features[0].center;
-        dispatch(
-          setFilters({
-            location: searchInput,
-            coordinates: [lng, lat],
-          })
-        );
-      }
+      const coordinates = await geocodeLocation(searchInput);
+      if (!coordinates) return;
+
+      const newFilters = { ...filters, location: searchInput, coordinates };
+      dispatch(setFilters(newFilters));
+      updateURL(newFilters);
     } catch (err) {
       console.error("Error search location:", err);
     }

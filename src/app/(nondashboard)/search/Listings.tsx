@@ -6,7 +6,6 @@ import {
   useRemoveFavoritePropertyMutation,
 } from "@/state/api";
 import { useAppSelector } from "@/state/redux";
-import { Property } from "@/types/prismaTypes";
 import Card from "@/components/Card";
 import React from "react";
 import CardCompact from "@/components/CardCompact";
@@ -34,7 +33,7 @@ const Listings = () => {
     if (!authUser) return;
 
     const isFavorite = tenant?.favorites?.some(
-      (fav: Property) => fav.id === propertyId
+      (fav) => fav.id === propertyId
     );
 
     if (isFavorite) {
@@ -70,7 +69,7 @@ const Listings = () => {
                 property={property}
                 isFavorite={
                   tenant?.favorites?.some(
-                    (fav: Property) => fav.id === property.id
+                    (fav) => fav.id === property.id
                   ) || false
                 }
                 onFavoriteToggle={() => handleFavoriteToggle(property.id)}
@@ -83,7 +82,7 @@ const Listings = () => {
                 property={property}
                 isFavorite={
                   tenant?.favorites?.some(
-                    (fav: Property) => fav.id === property.id
+                    (fav) => fav.id === property.id
                   ) || false
                 }
                 onFavoriteToggle={() => handleFavoriteToggle(property.id)}

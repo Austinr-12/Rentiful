@@ -39,13 +39,7 @@ const ApplicationModal = ({
       return;
     }
 
-    await createApplication({
-      ...data,
-      applicationDate: new Date().toISOString(),
-      status: "Pending",
-      propertyId: propertyId,
-      tenantCognitoId: authUser.cognitoInfo.userId,
-    });
+    await createApplication({ ...data, propertyId });
     onClose();
   };
 

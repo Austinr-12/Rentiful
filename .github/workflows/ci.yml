@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [main, Rentiful]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: API · typecheck, test, build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    env:
+      # Placeholders only. Nothing in CI connects to a database or Cognito;
+      # these satisfy modules that read env at import time.
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci
+      COGNITO_USER_POOL_ID: us-east-2_ci
+      COGNITO_CLIENT_ID: ci-client-id
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  web:
+    name: Web · lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+      # Placeholders so the Next.js build can evaluate modules that read
+      # NEXT_PUBLIC_* at import time. Real values are set at deploy time.
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:3002
+      NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN: pk.ci
+      NEXT_PUBLIC_AWS_COGNITO_USER_POOL_ID: us-east-2_ci
+      NEXT_PUBLIC_AWS_COGNITO_USER_POOL_CLIENT_ID: ci-client-id
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build

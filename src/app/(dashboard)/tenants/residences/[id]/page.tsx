@@ -10,12 +10,13 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  PropertyWithLocation,
   useGetAuthUserQuery,
   useGetLeasesQuery,
   useGetPaymentsQuery,
   useGetPropertyQuery,
 } from "@/state/api";
-import { Lease, Payment, Property } from "@/types/prismaTypes";
+import { Lease, Payment } from "@/types/prismaTypes";
 import {
   ArrowDownToLineIcon,
   Check,
@@ -79,7 +80,7 @@ const ResidenceCard = ({
   property,
   currentLease,
 }: {
-  property: Property;
+  property: PropertyWithLocation;
   currentLease: Lease;
 }) => {
   return (
@@ -236,20 +237,19 @@ const Residence = () => {
   } = useGetPropertyQuery(Number(id));
 
   const { data: leases, isLoading: leasesLoading } = useGetLeasesQuery(
-    parseInt(authUser?.cognitoInfo?.userId || "0"),
-    { skip: !authUser?.cognitoInfo?.userId }
+    undefined,
+    { skip: !authUser }
+  );
+  const currentLease = leases?.find(
+    (lease) => lease.propertyId === Number(id)
   );
   const { data: payments, isLoading: paymentsLoading } = useGetPaymentsQuery(
-    leases?.[0]?.id || 0,
-    { skip: !leases?.[0]?.id }
+    currentLease?.id ?? 0,
+    { skip: !currentLease }
   );
 
   if (propertyLoading || leasesLoading || paymentsLoading) return <Loading />;
   if (!property || propertyError) return <div>Error loading property</div>;
-
-  const currentLease = leases?.find(
-    (lease) => lease.propertyId === property.id
-  );
 
   return (
     <div className="dashboard-container">

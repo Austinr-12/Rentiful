@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  ApplicationStatus,
   useGetApplicationsQuery,
   useGetAuthUserQuery,
   useUpdateApplicationStatusMutation,
@@ -21,18 +22,10 @@ const Applications = () => {
     data: applications,
     isLoading,
     isError,
-  } = useGetApplicationsQuery(
-    {
-      userId: authUser?.cognitoInfo?.userId,
-      userType: "manager",
-    },
-    {
-      skip: !authUser?.cognitoInfo?.userId,
-    }
-  );
+  } = useGetApplicationsQuery();
   const [updateApplicationStatus] = useUpdateApplicationStatusMutation();
 
-  const handleStatusChange = async (id: number, status: string) => {
+  const handleStatusChange = async (id: number, status: ApplicationStatus) => {
     await updateApplicationStatus({ id, status });
   };
 

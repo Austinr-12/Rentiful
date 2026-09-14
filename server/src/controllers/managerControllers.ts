@@ -1,119 +1,54 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
-import { wktToGeoJSON } from "@terraformer/wkt";
+import { prisma } from "../lib/prisma";
+import { attachCoordinates } from "../lib/location";
+import { notFound } from "../lib/errors";
+import {
+  cognitoIdParam,
+  profileSchema,
+  updateProfileSchema,
+} from "../lib/schemas";
+import { currentUser } from "../middleware/authMiddleware";
 
-const prisma = new PrismaClient();
+export const getManager = async (req: Request, res: Response) => {
+  const { cognitoId } = cognitoIdParam.parse(req.params);
 
-export const getManager = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { cognitoId } = req.params;
-    const manager = await prisma.manager.findUnique({
-      where: { cognitoId },
-    });
+  const manager = await prisma.manager.findUnique({ where: { cognitoId } });
+  if (!manager) throw notFound("Manager");
 
-    if (manager) {
-      res.json(manager);
-    } else {
-      res.status(404).json({ message: "Manager not found" });
-    }
-  } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error retrieving manager: ${error.message}` });
-  }
+  res.json(manager);
 };
 
-export const createManager = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { cognitoId, name, email, phoneNumber } = req.body;
+/** Id comes from the verified token; upsert makes a retry harmless. */
+export const createManager = async (req: Request, res: Response) => {
+  const user = currentUser(req);
+  const data = profileSchema.parse(req.body);
 
-    const manager = await prisma.manager.create({
-      data: {
-        cognitoId,
-        name,
-        email,
-        phoneNumber,
-      },
-    });
+  const manager = await prisma.manager.upsert({
+    where: { cognitoId: user.id },
+    create: { cognitoId: user.id, ...data },
+    update: {},
+  });
 
-    res.status(201).json(manager);
-  } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error creating manager: ${error.message}` });
-  }
+  res.status(201).json(manager);
 };
 
-export const updateManager = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { cognitoId } = req.params;
-    const { name, email, phoneNumber } = req.body;
+export const updateManager = async (req: Request, res: Response) => {
+  const { cognitoId } = cognitoIdParam.parse(req.params);
+  const data = updateProfileSchema.parse(req.body);
 
-    const updateManager = await prisma.manager.update({
-      where: { cognitoId },
-      data: {
-        name,
-        email,
-        phoneNumber,
-      },
-    });
+  const manager = await prisma.manager.update({ where: { cognitoId }, data });
 
-    res.json(updateManager);
-  } catch (error: any) {
-    res
-      .status(500)
-      .json({ message: `Error updating manager: ${error.message}` });
-  }
+  res.json(manager);
 };
 
-export const getManagerProperties = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
-  try {
-    const { cognitoId } = req.params;
-    const properties = await prisma.property.findMany({
-      where: { managerCognitoId: cognitoId },
-      include: {
-        location: true,
-      },
-    });
+export const getManagerProperties = async (req: Request, res: Response) => {
+  const { cognitoId } = cognitoIdParam.parse(req.params);
 
-    const propertiesWithFormattedLocation = await Promise.all(
-      properties.map(async (property) => {
-        const coordinates: { coordinates: string }[] =
-          await prisma.$queryRaw`SELECT ST_asText(coordinates) as coordinates from "Location" where id = ${property.location.id}`;
+  const properties = await prisma.property.findMany({
+    where: { managerCognitoId: cognitoId },
+    include: { location: true },
+    orderBy: { postedDate: "desc" },
+  });
 
-        const geoJSON: any = wktToGeoJSON(coordinates[0]?.coordinates || "");
-        const longitude = geoJSON.coordinates[0];
-        const latitude = geoJSON.coordinates[1];
-
-        return {
-          ...property,
-          location: {
-            ...property.location,
-            coordinates: {
-              longitude,
-              latitude,
-            },
-          },
-        };
-      })
-    );
-
-    res.json(propertiesWithFormattedLocation);
-  } catch (err: any) {
-    res
-      .status(500)
-      .json({ message: `Error retrieving manager properties: ${err.message}` });
-  }
+  res.json(await attachCoordinates(properties));
 };
