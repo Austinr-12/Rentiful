@@ -58,6 +58,8 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - run: npm ci
+      - name: Install Linux native bindings (Tailwind v4 / lightningcss)
+        run: npm install --no-save lightningcss-linux-x64-gnu@<version> @tailwindcss/oxide-linux-x64-gnu@<version>
       - run: npm run lint
       - run: npm run typecheck
       - run: npm test
